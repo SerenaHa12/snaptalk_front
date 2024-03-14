@@ -15,6 +15,3 @@ export const useModal = create<ModalStore>((set) => ({
   onOpen: (type: ModalType) => set({ isOpen: true, type }),
   onClose: () => set({ type: null, isOpen: false }),
 }));
-
-// commit
-export 
