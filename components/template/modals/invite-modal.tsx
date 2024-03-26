@@ -16,12 +16,29 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { useModal } from "@/hooks/use-modal-store";
+import { useOrigin } from "@/hooks/use-origin";
 
 export const InviteModal = () => {
   // sử dụng flux - store để quản lý trạng thái
-  const { isOpen, onClose, type } = useModal();
-  const isModalOpen = isOpen && type === "invite";
+  const { isOpen, onClose, type, data } = useModal();
+  const origin = useOrigin();
 
+  const isModalOpen = isOpen && type === "invite";
+  const { server } = data;
+
+  const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
+
+  const onCopy = () => {
+    navigator.clipboard.writeText(inviteUrl);
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 1000);
+  };
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
@@ -41,11 +58,15 @@ export const InviteModal = () => {
           <div className="flex items-center mt-2 gap-x-2">
             <Input
               className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offet-0"
-              value="invite-link"
+              value={inviteUrl}
             />
 
-            <Button size="icon">
-              <Copy className="w-4 h-4" />
+            <Button size="icon" onClick={onCopy}>
+              {copied ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
             </Button>
           </div>
 
