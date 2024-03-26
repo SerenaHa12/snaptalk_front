@@ -52,7 +52,7 @@ export const CreateServerModal = () => {
 
   // sử dụng flux - store để quản lý trạng thái
   const { isOpen, onClose, type } = useModal();
-  const isModalOpen = isOpen || type === "createServer";
+  const isModalOpen = isOpen && type === "createServer";
 
   // sử lý submit tạo server
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
