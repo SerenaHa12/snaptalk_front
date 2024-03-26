@@ -17,10 +17,11 @@ import { Button } from "@/components/ui/button";
 
 import { useModal } from "@/hooks/use-modal-store";
 import { useOrigin } from "@/hooks/use-origin";
+import { tree } from "next/dist/build/templates/app-page";
 
 export const InviteModal = () => {
   // sử dụng flux - store để quản lý trạng thái
-  const { isOpen, onClose, type, data } = useModal();
+  const { onOpen, isOpen, onClose, type, data } = useModal();
   const origin = useOrigin();
 
   const isModalOpen = isOpen && type === "invite";
@@ -39,6 +40,21 @@ export const InviteModal = () => {
       setCopied(false);
     }, 1000);
   };
+
+  const onNew = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.patch(
+        `/api/servers/${server?.id}/invite-code`
+      );
+      onOpen("invite", { server: response.data });
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
@@ -57,11 +73,12 @@ export const InviteModal = () => {
           </Label>
           <div className="flex items-center mt-2 gap-x-2">
             <Input
+              disabled={isLoading}
               className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offet-0"
               value={inviteUrl}
             />
 
-            <Button size="icon" onClick={onCopy}>
+            <Button disabled={isLoading} size="icon" onClick={onCopy}>
               {copied ? (
                 <Check className="w-4 h-4" />
               ) : (
@@ -71,6 +88,8 @@ export const InviteModal = () => {
           </div>
 
           <Button
+            disabled={isLoading}
+            onClick={onNew}
             variant="link"
             size="sm"
             className="text-xs text-zinc-500 mt-4"
